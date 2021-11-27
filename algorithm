@@ -1,0 +1,24 @@
+Generator:
+    list of processes data <- readInputFile()
+    Algorithm type <- Ask user for Algorithm
+    fork clock
+    fork schedular
+    stop schedular
+    do foever
+        see if time to generate a process
+        if so pass it in the queue
+        continue schedular
+        stop myself
+
+Schedular:
+    should initiate its parameters given by the generator
+    do forever
+        check if new process are in the message queue
+        if so 
+            create PCB for them and add them in the ready queue
+            fork the new processes
+            stop all of them
+        do scheduling algorithm in the ready queue
+        continue generator
+        stop myself
+
