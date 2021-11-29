@@ -1,0 +1,42 @@
+generator                                                   schedular                                               running_process
+
+- read input file and store the input data
+- ask for the algorithm
+- create shared memory for the process entered
+- create shared memory for the clock
+- fork the sched                                            - attach to process shared memory
+- stop                                                      - attach to clock shared memory
+                                                            - continue the generator
+                                                            - do forever
+                                                            - pause /* wait for generator to tell me see the shared
+                                                                       memory */
+- fork the clock
+- do forever
+- calculate the difference between the current time
+  and the next time that a process will arrive in
+- if it is > 0 sleep that time
+- see if a process arrive
+- if so put it in the shared memory
+- signal the sched to see it
+- if SRTN
+-   sleep(the next process arrive time - current time)      
+-   signal the sched to pause itself and the current
+    running process
+- stop
+
+                                                            - see the memory
+                                                            - if processes arrive
+                                                            - make a pcb for the arrived processes 
+                                                            - fork all of them                                      - attach to the clock shared memory
+                                                            - stop utill they initialize themselfs                  - continue the sched
+                                                                                                                    - pause until its turn
+                                                            - run the process assigned by the algorithm
+                                                            - alarm after some time
+                                                            - pause untill it send a finsh signal or time out       - loop unitl it finish or stoped by time out
+                                                              or signal arrival
+                                                            - remove it from the queue if it is a finish signal
+                                                            - if does not send a singal in the specified time pause it
+                                                            - continue the generator
+                                                            - end do forever
+- end do forever
+
