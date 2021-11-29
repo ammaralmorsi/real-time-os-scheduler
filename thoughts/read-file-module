@@ -1,0 +1,29 @@
+the read file module
+- inputs:
+  - the name of the file to get the input from
+- output:
+  - structure that has an array of process_given_information and the size of that array
+
+algorithm:
+- open the file specified
+- if opend
+  - open a new pre processed file
+  - if opend
+    - ignore from a line begin with '#'
+    - count number of lines that has no '#' at the begining
+    - store those line as they is in a preproccesd file
+    - close that file
+    - close that file
+  - else
+    - assert error
+- else
+  - assert error
+
+- create a new block of memory of size process_given_information * number of lines that not begin with '#'
+- open the preprocessed file again
+- if opened
+  - store using scanf 4 by 4 the input data in the new created array
+- else
+  - assert error
+
+- return a structure {number of processes, pointer to the array of process_given_info}
