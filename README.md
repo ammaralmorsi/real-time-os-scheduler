@@ -1,2 +1,1 @@
-# real-time-os-schedular
-
+# real-time-process-schedular
