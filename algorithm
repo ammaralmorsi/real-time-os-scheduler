@@ -22,3 +22,51 @@ Schedular:
         continue generator
         stop myself
 
+here is how all of this work
+
+Generator:
+- read the input
+- ask for algorithm
+- create shared memory for the clock
+- create shared memory for process sending
+- attach to the created shared memory segmetns
+- fork the schedular
+  schedular:
+  - attach to the two segments created by the generator
+- stop //until the schedular attach to the memory
+  schedular:
+  - continue the generator
+  - stop 
+- fork the clock tick tick tick
+- do for ever
+     get current time
+     see if the next process arrival time is passed
+     if so
+        write them in the communication segment
+     else
+        set the size of the proccess to be read from the segment to zerp which will indicate to the schedular that no process arrives
+     continue sched
+     stop // the schedular will walk me up when requesting arriving process
+
+schedular:
+    do for ever
+       check the shared segment for size > 0
+       if so
+          create size pcbs
+          insert them in the queue
+          fork them
+          stop
+          process:
+            attach to clock
+            continue sched
+            stop //unitl being schedled
+          insert pcbs into the heap
+       continue the assigned HP one
+       wait for the process to finsh
+          process:
+            run unitl it finish
+            a sigchild should be send automatically
+       should be continued and handle a sigchild
+       continue the generator
+       stop // the generator will continue me after proccessing new arrival processes
+
