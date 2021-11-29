@@ -12,9 +12,10 @@ generator                                                   schedular           
                                                                        memory */
 - fork the clock
 - do forever
-- calculate the difference between the current time
-  and the next time that a process will arrive in
-- if it is > 0 sleep that time
+- if no processes in the ready queue
+-   calculate the difference between the current time
+    and the next time that a process will arrive in
+-   if it is > 0 sleep that time
 - see if a process arrive
 - if so put it in the shared memory
 - signal the sched to see it
@@ -39,4 +40,38 @@ generator                                                   schedular           
                                                             - continue the generator
                                                             - end do forever
 - end do forever
+
+constrients
+- the process generator will signal the schedular to see the memory only if it has process in the ready queue, or stop all untill a process arrive and then signal the sched
+- the sched will handle the see memory signal as follows
+    -> get all the arrived process information
+    -> make pcb for them
+    -> insert those pcbs in the queue and increment the number or process in the queue
+    -> fork them
+    -> pause until they attach to the memory and then they will signal me to continue
+    /* now the ready queue contains the process .. time for the assignment */
+- depending on the algorithm
+  if HPF
+  -> the schedular should set the time limit greater than the process will be assigned
+  if SRTN
+  -> the schedular shoudl set the time greater than the process will be assigned
+  if RR
+  -> the alarm should be the time quanta
+- should signal the process that has the CPU turn
+- raise an alarm for the time limit
+- pause this will also depend on the algorithm
+  if HPF
+  -> the sigchild should be the signal that get out of pause and the signal handler shoudl immidatly put the alarm to zero
+  if SRTN
+  -> the sigarrival or sigchild should be the signal that will get out of pause
+  if RR
+  -> either one of alarm or sigchild will get out of the pause
+  from this the all of these three signal may has only one handler to handle them
+  the handler:
+  - set the alarm to zero
+  if the caller is due alarm signal or arrival signal
+  -> should pause the current running process
+  if the caller is due sigchild
+  -> should remove the pcb for the process and decrement the current in queue number of processes
+- the schedular then continue the generator
 
