@@ -1,0 +1,11 @@
+read_algorithm
+input:
+    nothing
+output: enum alogrithm_type
+
+algorithm:
+
+- ask the user to input one of the specified algorithms.
+- do some else if and return the one given 
+- if none of them are given return none 
+
