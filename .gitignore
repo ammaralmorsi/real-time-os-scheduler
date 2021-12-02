@@ -2,3 +2,4 @@
 *.pre
 main.c
 *.out
+*.log
