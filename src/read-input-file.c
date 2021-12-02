@@ -3,24 +3,21 @@
 
 #include "../inc/process-input-information.h"
 
-piinfo* read_input_file(const char* file_name)
-{
-    piinfo* processes;
-    int num_of_process, num_of_comments, num_of_lines;
-    FILE* in_file, *pre_processed_file;
-    char c;
-    int i;
+#define PRE_PROCESSED_FILE_NAME "processes.pre"
 
-    /*
-     * first open the file to count number of lines
-     * and number of comments
-     */
+process_list* read_input_file(const char* file_name)
+{
+    process_list* plist;
+    piinfo* processes;
+    FILE* in_file, *pre_proc_file;
+    int num_of_process, num_of_comments, num_of_lines, i;
+    char c;
 
     in_file = fopen(file_name, "r");
-    pre_processed_file = fopen("pre.txt", "w");
+    pre_proc_file = fopen(PRE_PROCESSED_FILE_NAME, "w");
     if(in_file)
     {
-        if(pre_processed_file)
+        if(pre_proc_file)
         {
             num_of_lines = num_of_comments = 0;
             while((c=getc(in_file)) != EOF)
@@ -33,16 +30,18 @@ piinfo* read_input_file(const char* file_name)
                     while((c = getc(in_file)) != EOF &&
                             c != '\n')
                         ;
+
                     ++num_of_lines;
                     continue;
                 }
 
+                putc(c ,pre_proc_file);
+                
                 if(c == '\n')
                     ++num_of_lines;
 
-                putc(c ,pre_processed_file);
             }
-            fclose(pre_processed_file);
+            fclose(pre_proc_file);
         }
         fclose(in_file);
     }
@@ -50,38 +49,46 @@ piinfo* read_input_file(const char* file_name)
     {
         exit(EXIT_FAILURE);
     }
-    printf("number of lines:%d \n", num_of_lines);
-    printf("number of comments:%d \n", num_of_comments);
 
     num_of_process = num_of_lines - num_of_comments;
-    printf("number of processes: %d\n", num_of_process);
-
     processes = (piinfo*)malloc(num_of_process * sizeof(piinfo));
 
-    pre_processed_file = fopen("pre.txt", "r");
-    if(pre_processed_file)
+    pre_proc_file = fopen(PRE_PROCESSED_FILE_NAME, "r");
+    if(pre_proc_file)
     {
         for(i = 0; i < num_of_process;i++)
-            fscanf(pre_processed_file, "%d%d%d%d",
+            fscanf(pre_proc_file, "%d%d%d%d",
                     &(processes[i].id),
                     &(processes[i].arriv_time),
                     &(processes[i].tot_run_time),
                     &(processes[i].priority));
 
-        fclose(pre_processed_file);
+        fclose(pre_proc_file);
     }
     else
     {
         exit(EXIT_FAILURE);
     }
 
-    for(i = 0; i < num_of_process; i++)
-        printf("%d %d %d %d\n",
-                processes[i].id,
-                processes[i].arriv_time,
-                processes[i].tot_run_time,
-                processes[i].priority);
+    plist = (process_list*)malloc(sizeof(process_list));
 
-    return 0;  
+    plist->size = num_of_process;
+    plist->processes = processes;
+
+    return plist;
+}
+
+
+void free_input_resources(process_list** plist)
+{
+    if(*plist)
+    {
+        if((*plist)->processes)
+            free((*plist)->processes);
+
+        free(*plist);
+        *plist = 0;
+    }
+    return;
 }
 

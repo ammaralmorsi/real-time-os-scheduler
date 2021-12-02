@@ -6,9 +6,12 @@
 /*
  * Input: name of input file
  * Output: dynamically allocated array of process_input_information structure
- *          caller should be responsible for free memory
+ *          caller should be responsible for calling free_input_resources to free
+ *          the allocated memory
  */
-piinfo* read_input_file(const char*);
+process_list* read_input_file(const char*);
+
+void free_input_resources(process_list**);
 
 #endif
 
