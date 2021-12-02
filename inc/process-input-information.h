@@ -8,4 +8,10 @@ struct process_input_information
 
 typedef struct process_input_information piinfo;
 
+struct process_list
+{
+    int size;
+    piinfo* processes;
+}
+
 #endif
