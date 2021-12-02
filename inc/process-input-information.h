@@ -1,17 +1,15 @@
 #ifndef PROCESS_INPUT_INFORMATION_H
 #define PROCESS_INPUT_INFORMATION_H
 
-struct process_input_information
+typedef struct process_input_information
 {
     int id, arriv_time, tot_run_time, priority; 
-};
+} piinfo;
 
-typedef struct process_input_information piinfo;
-
-struct process_list
+typedef struct process_list
 {
     int size;
     piinfo* processes;
-}
+} process_list;
 
 #endif
