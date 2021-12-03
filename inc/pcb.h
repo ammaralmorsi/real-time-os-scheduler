@@ -19,7 +19,8 @@ typedef struct process_control_block
     int last_time_leave_cpu,
         remain_time,
         wait_time,
-        turn_around_time;
+        turn_around_time,
+        key;
     float weighted_turn_around;
 } PCB;
 
