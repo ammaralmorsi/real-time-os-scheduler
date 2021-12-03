@@ -9,7 +9,9 @@ typedef struct pcb_queue
     PCB* pcbs;
 } pcb_queue;
 
-pcb_queue* create_pcb_queue(const int);
+pcb_queue create_pcb_queue(const int);
+
+void free_pcb_queue(pcb_queue*);
 
 int is_full_pcb_queue(pcb_queue*);
 
