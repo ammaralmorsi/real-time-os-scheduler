@@ -5,7 +5,7 @@
 
 typedef struct pcb_min_heap
 {
-    int lenght;
+    int length;
     PCB* pcbs;
 
 } pcb_heap;
