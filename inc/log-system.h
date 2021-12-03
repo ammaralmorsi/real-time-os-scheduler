@@ -14,6 +14,6 @@ void log_str(FILE*, const char*);
 
 void log_process_list(FILE*, process_list*);
 
-void log_pcb(FILE*,int , pcb*);
+void log_pcb(FILE*,int , PCB*);
 
 #endif

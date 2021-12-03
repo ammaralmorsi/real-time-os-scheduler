@@ -9,11 +9,11 @@ int main(void)
 {
     FILE* fptr;
     process_list* plist;
-    pcb* pcb_test;
+    PCB* pcb_test;
 
     plist = read_input_file("processes.txt");
     fptr = open_log_file("test.log");
-    pcb_test = (pcb*)malloc(plist->size * sizeof(pcb));
+    pcb_test = (PCB*)malloc(plist->size * sizeof(PCB));
 
     log_str(fptr, "THIS IS THE FIRST LINE IN THE LOG FILE\n");
 

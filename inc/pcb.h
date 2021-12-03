@@ -21,7 +21,7 @@ typedef struct process_control_block
         wait_time,
         turn_around_time;
     float weighted_turn_around;
-} pcb;
+} PCB;
 
 #endif
 

@@ -38,7 +38,7 @@ void log_process_list(FILE* fptr, process_list* plist)
     return;
 }
 
-void log_pcb(FILE* fptr,int curr_time, pcb* pcbptr)
+void log_pcb(FILE* fptr,int curr_time, PCB* pcbptr)
 {
     if(!(fptr && pcbptr))
         return;
