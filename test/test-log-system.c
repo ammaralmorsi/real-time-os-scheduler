@@ -4,16 +4,19 @@
 #include "../inc/log-system.h"
 #include "../inc/read-input-file.h"
 #include "../inc/pcb.h"
+#include "../inc/pcb-queue.h"
 
 int main(void)
 {
     FILE* fptr;
     process_list* plist;
-    PCB* pcb_test;
+    PCB* pcb_test, holder;
+    pcb_queue queue;
 
     plist = read_input_file("processes.txt");
     fptr = open_log_file("test.log");
     pcb_test = (PCB*)malloc(plist->size * sizeof(PCB));
+    queue = create_pcb_queue(plist->size);
 
     log_str(fptr, "THIS IS THE FIRST LINE IN THE LOG FILE\n");
 
@@ -31,9 +34,13 @@ int main(void)
         pcb_test[i].wait_time = i;
         pcb_test[i].turn_around_time = i;
         pcb_test[i].weighted_turn_around = 1.333f * i;
-        log_pcb(fptr, i, &(pcb_test[i]));
+
+        enqueue_pcb(&queue, pcb_test[i]);
+        holder = dequeue_pcb(&queue);
+        log_pcb(fptr, i, &holder);
     }
 
+    free_pcb_queue(&queue);
     close_log_file(fptr);
     free_input_resources(&plist);
     free(pcb_test);
