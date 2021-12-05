@@ -48,3 +48,56 @@ signal handler(signal)
         continue the generator /* to make it assign shared memory with arrived processes */
         pause() /* until the generator signal arrived proceses */
 
+functions algorithm
+----------
+-> Add arrived processes
+begin:
+   lookup how many arrived processes
+   for each arrived processes
+       create PCB according to given information
+       put the total run time for that process in a shared memory between the schedular and the process to be created
+       create that process
+       STOP until it attach to shared memory resources, the process will send sigcont to me after it complete attaching
+       if RR
+          use queue interface to add the created PCB
+          update the shared memory between the schedular and the generator to contain the current number of process in the queue
+       else /*SRTN or HPF*/
+          use heap interface to add the created PCB 
+          update the shared memory between the schedular and the generator to contain the current number of process in the heap 
+end:
+
+-> Pause current running process
+begin:
+    if RR
+        if not empty queue
+            pause the current running process, the process will put its remaining time in a shared memory
+            update the remaining time in the PCB of the process to be stopped
+            /*move it to the end*/
+            dequeu it
+            enqueu it
+    else /*SRTN or HPF*/
+        if not empty heap
+            pause the current running process, the process will put its remaining time in a shared memory
+            update the remaining time int the PCB of the process to  be stopped
+end:
+
+-> Remove finished process
+begin:
+    if RR
+        dequeue it
+        update the shared memory between the schedular and the generator to contain the current number of process in the queue
+    else
+        use heap interface to delete it
+        update the shared memory between the schedular and the generator to contain the current number of process in the heap 
+
+end:
+
+-> Run assigned process
+begin:
+    if RR
+       get the first PCB from the queue
+       write its remaining time in the shared memory
+    else
+       do the same as above but use the heap interface
+    signal that process to continue
+end:
