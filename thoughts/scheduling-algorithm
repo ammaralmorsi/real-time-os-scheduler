@@ -1,0 +1,50 @@
+Schedular
+----------
+The Schedular should handle 3 types of signals
+-> When a processes arrive:
+   this signal must be sent only by the processes generator, the schedular should handle it
+   by adding the arrived processes to its ready queue
+
+-> When a running process terminate:
+   this signal must be sent only by the processes that are finished, the schedular should handle it
+   by removing the PCB of that process from the ready queue.
+   Assumption:
+   Unless SRTN algorithm the schedular will ask the generator if there are any arrived process after
+   each finished process , this happens only with RR and HPF algorithms.
+
+-> alarm timeout: pause the current running process and wait for arrival signal
+   this is some how the complicated one, the alarm signal may be raised by the schedular or sent to the schedular by the generator
+   for the first case: this happens only in RR algorithm and this implies that the timeout is the quanta used.
+   for the second case: Why on the earth should a generator send a timeout signal to the schedular, actualy it is not a timeout
+                        it is a signal by the generator only in SRTN since it is a pereemptive algorithm the schudlar should
+                        be notified when there is a process will arrive at this instant of time. this process may have running time
+                        less than the currently running process in this case by defintion of the algorithm the currently running process
+                        should be stopped and the new arrived process should take the cpu. if the arrived process has run time greater than
+                        the currently running process the currently running process will take the cpu again. notice it will take it again
+                        because it is gaurteed it has the least remaining time.
+   Since this signal has two different actions depending on the algorithm either two action must happen:
+   for RR: the pause current running should 1- stop the process 2- dequeue its PCB 3- enqueue its PCB
+   for SRTN: the pause current running should 1- stop the process only since the process currently running is gaurnteed to be at the
+             top of the heap. and has the shortest reaminng time of all other processes currently in the heap. after adding the arrived
+             proces to the heap, SRT process may be changed depending on the arrived processes.
+
+
+psudocode:
+----------
+
+do forever
+    pause /* until one of the signals above arrived */
+    run assigned process
+    alarm(n) /* n depend on the algorithm, it is the time quanta in RR and very large on other algorithms */
+
+signal handler(signal)
+    if signal is arrived processes
+        add arrived processes
+    else
+        if signal is terminated process
+            remove running process
+        else /* alarm time out */
+            pause current runnig
+        continue the generator /* to make it assign shared memory with arrived processes */
+        pause() /* until the generator signal arrived proceses */
+

@@ -73,5 +73,5 @@ constrients
   -> should pause the current running process
   if the caller is due sigchild
   -> should remove the pcb for the process and decrement the current in queue number of processes
-- the schedular then continue the generator
+- the schedular then continue the generator , and wait until a signal arrival
 
