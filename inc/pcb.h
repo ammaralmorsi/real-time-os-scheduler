@@ -16,7 +16,8 @@ typedef struct process_control_block
 {
     process_state curr_state;
     piinfo given_info; /*given from the generator*/
-    int last_time_leave_cpu,
+    int sys_id,
+        last_time_leave_cpu,
         remain_time,
         wait_time,
         turn_around_time,
