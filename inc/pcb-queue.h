@@ -21,4 +21,6 @@ void enqueue_pcb(pcb_queue*, PCB);
 
 PCB dequeue_pcb(pcb_queue*);
 
+PCB get_front_pcb(pcb_queue*);
+
 #endif

@@ -64,3 +64,11 @@ PCB dequeue_pcb(pcb_queue* queue)
 
     return pcb;
 }
+
+PCB get_front_pcb(pcb_queue* queue)
+{
+    if(!queue->pcbs || is_empty_pcb_queue(queue))
+        assert(0);
+
+    return queue->pcbs[queue->read_index];
+}
