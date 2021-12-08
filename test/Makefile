@@ -1,3 +1,10 @@
+#test generator
+build-generator : ../src/read-input-file.c\
+	../src/get-algorithm.c\
+	../src/process-generator.c
+	gcc -Wall ../src/read-input-file.c ../src/get-algorithm.c ../src/process-generator.c\
+		../src/log-system.c\
+			-o process-generator.out
 
 #test pcb_queue
 #test log system

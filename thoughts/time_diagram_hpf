@@ -12,6 +12,7 @@ generator                                                   schedular           
                   iteration
 - fork the sched                                            - attach to process shared memory
 - stop                                                      - attach to clock shared memory
+                                                            - set num_ready to 0
                                                             - continue the generator
                                                             - do forever
                                                             - pause /* wait for generator to tell me see the shared
