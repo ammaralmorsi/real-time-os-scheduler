@@ -77,7 +77,7 @@ begin:
             enqueu it
     else /*SRTN or HPF*/
         if not empty heap
-            pause the current running process, the process will put its remaining time in a shared memory
+            pause the current running process, the process will put its remaining time in a shared memory "send sigalarm"
             update the remaining time in the PCB of the process to  be stopped
 end:
 
