@@ -78,7 +78,7 @@ begin:
     else /*SRTN or HPF*/
         if not empty heap
             pause the current running process, the process will put its remaining time in a shared memory
-            update the remaining time int the PCB of the process to  be stopped
+            update the remaining time in the PCB of the process to  be stopped
 end:
 
 -> Remove finished process
@@ -101,3 +101,4 @@ begin:
        do the same as above but use the heap interface
     signal that process to continue
 end:
+
