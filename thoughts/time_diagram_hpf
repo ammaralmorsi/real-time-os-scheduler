@@ -4,6 +4,12 @@ generator                                                   schedular           
 - ask for the algorithm
 - create shared memory for the process entered
 - create shared memory for the clock
+- put in the shared memory the amount of time that the
+  schedular must put in the alarm to send to it an alarm
+  signal: if HPF it must be INT_MAX
+          else if RR it must be time quantum
+          else if SRTN it will be setted after each main
+                  iteration
 - fork the sched                                            - attach to process shared memory
 - stop                                                      - attach to clock shared memory
                                                             - continue the generator
@@ -18,11 +24,9 @@ generator                                                   schedular           
 -   if it is > 0 sleep that time
 - see if a process arrive
 - if so put it in the shared memory
-- signal the sched to see it
-- if SRTN
--   sleep(the next process arrive time - current time)      
--   signal the sched to pause itself and the current
-    running process
+- if SRTN put in the shared memory the amount of time that 
+  the schedular must pause until signal alarm arrived
+- signal the sched to see the shared memory 
 - stop
 
                                                             - see the memory

@@ -35,7 +35,7 @@ psudocode:
 do forever
     pause /* until one of the signals above arrived */
     run assigned process
-    alarm(n) /* n depend on the algorithm, it is the time quanta in RR and very large on other algorithms */
+    alarm(n) /* n depend on the algorithm, it is the time quanta in RR and delta time to another process to arrive if SRTN and very large on HPF */
 
 signal handler(signal)
     if signal is arrived processes
