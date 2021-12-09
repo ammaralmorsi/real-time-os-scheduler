@@ -5,22 +5,22 @@
 
 #include <sys/types.h>
 
-int     ftk_prjid_gen_num_arrived_processes = 1;
+int     ftk_prjid_gen_num_arrived_processes = 2;
 key_t   ftkey_gen_num_arrived_processes;
 int     shmid_gen_num_arrived_processes;
 int*    shm_gen_num_arrived_processes;
 
-int     ftk_prjid_gen_processes_arrived = 2;
+int     ftk_prjid_gen_processes_arrived = 3;
 key_t   ftkey_gen_processes_arrived;
 int     shmid_gen_processes_arrived;
 piinfo* shm_gen_processes_arrived;
 
-int     ftk_prjid_gen_alarm_time_out = 3;
+int     ftk_prjid_gen_alarm_time_out = 4;
 key_t   ftkey_gen_alarm_time_out;
 int     shmid_gen_alarm_time_out;
 int*    shm_gen_alarm_time_out;
 
-int     ftk_prjid_schd_num_ready_processes = 4;
+int     ftk_prjid_schd_num_ready_processes = 5;
 key_t   ftkey_schd_num_ready_processes;
 int     shmid_schd_num_ready_processes;
 int*    shm_schd_num_ready_processes;

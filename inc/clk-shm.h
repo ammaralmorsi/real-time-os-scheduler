@@ -3,7 +3,7 @@
 
 #include <sys/types.h>
 
-int     ftk_prjid_clk_curr_time = 0;
+int     ftk_prjid_clk_curr_time = 1;
 key_t   ftkey_clk_curr_time = 0;
 int     shmid_clk_curr_time = 0;
 int*    shm_clk_curr_time = 0;
