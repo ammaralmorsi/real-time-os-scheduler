@@ -115,7 +115,7 @@ void add_arrived_processes(void)
         pcb.given_info = shm_gen_processes_arrived[i];
         pcb.last_time_leave_cpu = pcb.given_info.arriv_time;
         pcb.remain_time = pcb.given_info.tot_run_time;
-        pcb.wait_time = *shm_clk_curr_time - pcb.last_time_leave_cpu;
+        pcb.wait_time = 0;
         pcb.turn_around_time = 0;
         pcb.weighted_turn_around = 0.0f;
         *shm_schd_running_process_remin_time = pcb.remain_time;
