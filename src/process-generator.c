@@ -88,6 +88,7 @@ int main(void)
             time_to_arriv = 
                 plist->processes[index_of_process_to_arrive_next].arriv_time -
                 *shm_clk_curr_time;
+            printf("generator sleep time %d\n", time_to_arriv);
 
             if(time_to_arriv > 0)
                 sleep(time_to_arriv);

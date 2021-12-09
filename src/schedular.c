@@ -1,3 +1,4 @@
+#include <sys/wait.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -26,6 +27,7 @@ void add_arrived_processes(void);
 void remove_finished_process(void);
 void pause_running_process(void);
 void schedular_context_switch(int);
+void handler(int);
 /*************************/
 
 /* global variables      */
@@ -35,20 +37,25 @@ PCB current_running_process;
 algo_type algtyp;
 pid_t gen_id;
 int max_num_processes;
+int arrived_signal;
 FILE* file;
 /*************************/
 
+void handler(int signum)
+{
+    arrived_signal = signum;
+}
 
 int main(int argc, char** argv)
 {
     signal(SIGINT, schedular_exit);
-    signal(SIGUSR1, schedular_context_switch);
-    signal(SIGCHLD, schedular_context_switch);
-    signal(SIGALRM, schedular_context_switch);
+    signal(SIGUSR1, handler);
+    signal(SIGUSR2, handler);
+    signal(SIGALRM, handler);
 
     gen_id = getppid();
 
-        if(argc < 2)
+    if(argc < 2)
         exit(EXIT_FAILURE);
 
     file = open_log_file("schedular.log");
@@ -78,7 +85,9 @@ int main(int argc, char** argv)
 
     while(1)
     {
+        printf("number of process in the queue%d\n", *shm_schd_num_ready_processes);
         pause();
+        schedular_context_switch(arrived_signal);
         run_assigned_process();
         alarm(*shm_gen_alarm_time_out);
     }
@@ -89,17 +98,22 @@ int main(int argc, char** argv)
 void schedular_context_switch(int signum)
 {
     alarm(0);
+    printf("context\n");
 
     if(signum == SIGUSR1)
         add_arrived_processes();
     else
     {
-        if(signum == SIGCHLD)
+        if(signum == SIGUSR2)
             remove_finished_process();
         else /*alarm timeout*/
             pause_running_process();
+        printf("continue generator\n");
         kill(gen_id, SIGCONT);
+        printf("wait for generator signal...\n");
         pause();
+        printf("signal arrived %d\n", arrived_signal);
+        schedular_context_switch(arrived_signal);
     }
     return;
 }
@@ -108,6 +122,7 @@ void add_arrived_processes(void)
 {
     int i;
     PCB pcb;
+    printf("add num arrived %d\n", *shm_gen_num_arrived_processes);
 
     for(i = 0; i < *shm_gen_num_arrived_processes; i++)
     {
@@ -119,11 +134,14 @@ void add_arrived_processes(void)
         pcb.turn_around_time = 0;
         pcb.weighted_turn_around = 0.0f;
         *shm_schd_running_process_remin_time = pcb.remain_time;
-        /*
+
         if((pcb.sys_id = fork()) == 0)
             execl("./process.out", "process.out",NULL);
-        raise(SIGSTOP);
-        */
+
+        printf("created process id %d\n", pcb.sys_id);
+        printf("fork process\n");
+        pause();
+        printf("process wakeme up\n");
 
         if(algtyp == RR)
             enqueue_pcb(&queue, pcb);
@@ -145,6 +163,10 @@ void add_arrived_processes(void)
 
 void remove_finished_process(void)
 {
+    printf("remove\n");
+    printf("to remove id %d\n", current_running_process.sys_id);
+
+    wait(NULL);
 
     if(algtyp == RR)
         dequeue_pcb(&queue);
@@ -158,6 +180,7 @@ void remove_finished_process(void)
     current_running_process.weighted_turn_around = current_running_process.turn_around_time / 
                                    (float) current_running_process.given_info.tot_run_time;
     log_pcb(file,*shm_clk_curr_time, &current_running_process);
+    printf("at time %d process %d finished arrive at %d\n", *shm_clk_curr_time, current_running_process.given_info.id, current_running_process.given_info.arriv_time);
 
     (*shm_schd_num_ready_processes)--;
     return;
@@ -181,36 +204,46 @@ void run_assigned_process(void)
                                           current_running_process.last_time_leave_cpu;
 
     log_pcb(file,*shm_clk_curr_time, &current_running_process);
-    /*
-    kill(current_running_process.sys_id, SIGCONT);
-    */
+
+    printf("runn assigned process\n");
+    printf("curring running id %d\n", current_running_process.sys_id);
+    kill(current_running_process.sys_id, SIGUSR1);
+
     return;
 }
 
 void pause_running_process(void)
 {
-    /*
-    kill(current_running_process.sys_id, SIGALRM);
-    raise(SIGSTOP); 
-    */
+    printf("pause\n");
+    printf("curring running id %d\n", current_running_process.sys_id);
 
     if(algtyp == RR)
     {
-        dequeue_pcb(&queue);
-        current_running_process.remain_time = *shm_schd_running_process_remin_time;
-        current_running_process.last_time_leave_cpu = *shm_clk_curr_time;
-        current_running_process.curr_state = STOPPED;
-        enqueue_pcb(&queue, current_running_process);
+        if(!is_empty_pcb_queue(&queue))
+        {
+            kill(current_running_process.sys_id, SIGALRM);
+            pause();
+            dequeue_pcb(&queue);
+            current_running_process.remain_time = *shm_schd_running_process_remin_time;
+            current_running_process.last_time_leave_cpu = *shm_clk_curr_time;
+            current_running_process.curr_state = STOPPED;
+            enqueue_pcb(&queue, current_running_process);
+        }
     }
     else
     {
-        extract_min_pcb_heap(&heap);
-        current_running_process.remain_time = *shm_schd_running_process_remin_time;
-        if(algtyp == SRTN)
-            current_running_process.key = current_running_process.remain_time;
-        current_running_process.last_time_leave_cpu = *shm_clk_curr_time;
-        current_running_process.curr_state = STOPPED;
-        insert_pcb_heap(&heap, current_running_process);
+        if(!is_empty_pcb_heap(&heap))
+        {
+            kill(current_running_process.sys_id, SIGALRM);
+            pause();
+            extract_min_pcb_heap(&heap);
+            current_running_process.remain_time = *shm_schd_running_process_remin_time;
+            if(algtyp == SRTN)
+                current_running_process.key = current_running_process.remain_time;
+            current_running_process.last_time_leave_cpu = *shm_clk_curr_time;
+            current_running_process.curr_state = STOPPED;
+            insert_pcb_heap(&heap, current_running_process);
+        }
     }
 
     log_pcb(file, *shm_clk_curr_time, &current_running_process);
