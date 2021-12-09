@@ -76,8 +76,9 @@ int main(void)
     
     raise(SIGSTOP);
     /*fork the clock*/
-
-    *shm_clk_curr_time = INT_MAX;
+    *shm_clk_curr_time = 0;
+    if((clk_id = fork()) == 0)
+        execl("./clk.out", "clk.out", NULL);
     index_of_process_to_arrive_next = 0;
     /* main loop */
     while(!simulation_finished())
@@ -207,6 +208,7 @@ void generator_exit(int signum)
 void generator_free_resources(void)
 {
     kill(schd_id, SIGINT);
+    kill(clk_id, SIGINT);
     free_input_resources(&plist);
     generator_free_shm();
 
