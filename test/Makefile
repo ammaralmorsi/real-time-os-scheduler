@@ -1,3 +1,13 @@
+
+build:
+	make build-generator build-schedular build-clk build-process
+
+build-clk : ../src/clk.c
+	gcc -Wall ../src/clk.c -o clk.out
+build-process : ../src/process.c
+	gcc -Wall ../src/process.c -o process.out
+
+
 #test generator
 build-generator : ../src/read-input-file.c\
 	../src/get-algorithm.c\
