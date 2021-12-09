@@ -27,4 +27,5 @@ build-read-input-file : test-read-input-file.c\
 						../src/read-input-file.c
 	gcc -Wall test-read-input-file.c ../src/read-input-file.c -o read-input.out
 
-
+build-schedular :  
+	gcc ../src/schedular.c ../src/log-system.c ../src/min-heap.c ../src/pcb-queue.c -o schedular.out
