@@ -13,7 +13,7 @@
 #include "../inc/gen-schd-shm.h"
 
 /*  functions prototypes */
-void generator_set_shm_ids(void);
+void generator_set_shm_keys(void);
 void generator_create_shm(void);
 void generator_attach_shm(void);
 int  simulation_finished(void);
@@ -43,7 +43,7 @@ int main(void)
     plist = read_input_file("processes.txt");
     algtyp = get_algorithm_type();
 
-    generator_set_shm_ids();
+    generator_set_shm_keys();
     generator_create_shm();
     generator_attach_shm();
 
@@ -62,10 +62,22 @@ int main(void)
             break;
     }
 
+    /*
+     *will just use this variable to the max number of processes that may arrive
+     * to allow the schedular initialize its data structure
+     */
+    *shm_gen_num_arrived_processes = plist->size;
+
     /*fork the schedular*/
-    /*stop untill the schedular attach to memory*/
+    char command[32];
+    sprintf(command,"%d", algtyp);
+    if((schd_id = fork()) == 0)
+        execl("./schedular.out","schedular.out", command, NULL);
+    
+    raise(SIGSTOP);
     /*fork the clock*/
 
+    *shm_clk_curr_time = INT_MAX;
     index_of_process_to_arrive_next = 0;
     /* main loop */
     while(!simulation_finished())
@@ -74,14 +86,15 @@ int main(void)
         {
             time_to_arriv = 
                 plist->processes[index_of_process_to_arrive_next].arriv_time -
-                     *shm_clk_curr_time;
+                *shm_clk_curr_time;
 
             if(time_to_arriv > 0)
                 sleep(time_to_arriv);
         }
 
         num_arrived = 0;
-        while(plist->processes[index_of_process_to_arrive_next].arriv_time <= 
+        while(index_of_process_to_arrive_next < plist->size &&
+                plist->processes[index_of_process_to_arrive_next].arriv_time <= 
                 *shm_clk_curr_time)
             shm_gen_processes_arrived[num_arrived++] = 
                 plist->processes[index_of_process_to_arrive_next++];
@@ -93,9 +106,8 @@ int main(void)
                 plist->processes[index_of_process_to_arrive_next].arriv_time -
                 *shm_clk_curr_time;
 
-        
-        /*kill(schd_id, SIGINT);*/
-        pause();
+        kill(schd_id, SIGUSR1);
+        raise(SIGSTOP);
     }
 
     generator_free_resources();
@@ -111,7 +123,7 @@ int simulation_finished(void)
     return 0;
 }
 
-void generator_set_shm_ids(void)
+void generator_set_shm_keys(void)
 {
     ftkey_clk_curr_time = ftok(FTOK_FILE, ftk_prjid_clk_curr_time);
 
@@ -194,6 +206,7 @@ void generator_exit(int signum)
 
 void generator_free_resources(void)
 {
+    kill(schd_id, SIGINT);
     free_input_resources(&plist);
     generator_free_shm();
 
